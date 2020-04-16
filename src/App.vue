@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen py-12 px-4 flex items-center justify-center" :class="color">
+  <div class="min-h-screen py-4 px-4 flex items-center justify-center text-gray-900" :class="color">
     <div
       class="container bg-white p-12 shadow-lg rounded-md flex flex-col items-center justify-around"
     >
@@ -9,7 +9,7 @@
         <div class="flex items-center">
           <input
             v-model.number="volume"
-            class="w-24 text-xl mr-2 form-input"
+            class="w-24 text-xl mr-2 form-input font-semibold"
             type="number"
             min="1"
             oninput="validity.valid||(value=1)"
@@ -17,26 +17,13 @@
           <p>ml</p>
         </div>
         <p class="pl-0 pt-4 sm:pl-8 sm:pt-0">of</p>
-        <div class="flex flex-col items-center p-8">
-          <img class="h-32" :src="require(`@/assets/${iHave}.svg`)" />
-          <select class="mt-4 form-select" v-model="iHave">
-            <option>Orange</option>
-            <option>Grapefruit</option>
-            <option>Pineapple</option>
-          </select>
-        </div>
+        <fruit-picker :fruits="from" v-model="iHave" />
         <p class="text-center">adjusted to</p>
-        <div class="flex flex-col items-center p-8">
-          <img class="h-32" :src="require(`@/assets/${iWant}.svg`)" />
-          <select class="mt-4 form-select" v-model="iWant">
-            <option>Lime</option>
-            <option>Lemon</option>
-          </select>
-        </div>
+        <fruit-picker :fruits="to" v-model="iWant" />
       </div>
       <div class="mt-4">
         <p class="font-semibold text-gray-800 text-xl text-center">Add</p>
-        <ul class="mt-2 text-lg">
+        <ul class="mt-2 text-lg h-12">
           <li v-for="(ingredient, idx) in adjustments" :key="idx">
             <span class="font-semibold">{{ingredient.amount.toFixed(1)}}</span>
             g of {{ingredient.name}} acid
@@ -48,7 +35,12 @@
 </template>
 
 <script>
+import FruitPicker from "./components/FruitPicker.vue";
+
 export default {
+  components: {
+    FruitPicker
+  },
   data() {
     return {
       volume: 1000,
@@ -86,6 +78,12 @@ export default {
     };
   },
   computed: {
+    from() {
+      return Object.keys(this.per1000);
+    },
+    to() {
+      return new Set(Object.values(this.per1000).flatMap(x => Object.keys(x)));
+    },
     color() {
       return this.iWant === "Lime" ? "bg-green-400" : "bg-yellow-400";
     },
